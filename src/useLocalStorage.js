@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
 
-export function useLocalStorage() {
-  const [firstName, setFirstName] = useState("");
+export function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(() => {
+    const localValue = localStorage.getItem(key);
+    if (localValue == null) {
+      return initialValue;
+    } else {
+      return localValue;
+    }
+  });
 
   useEffect(() => {
-    localStorage.setItem("firstName", JSON.stringify(firstName));
-  }, [firstName]);
+    localStorage.setItem(key, value);
+  }, [value]);
+
+  //   useEffect(() => {
+  //     const name = localStorage.getItem("firstName");
+  //   }, []);
+
+  return [value, setValue];
 }
