@@ -4,19 +4,24 @@ export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     const localValue = localStorage.getItem(key);
     if (localValue == null) {
-      return initialValue;
+      if (typeof initialValue === "function") {
+        return initialValue();
+      } else {
+        return initialValue;
+      }
     } else {
-      return localValue;
+      return JSON.parse(localValue); // Have to properly serialize the data using JSON in order to get the hobbies to render. Here, converted value from a string into an actual js object.
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(key, value);
-  }, [value]);
-
-  //   useEffect(() => {
-  //     const name = localStorage.getItem("firstName");
-  //   }, []);
+    if (value === undefined) {
+      // Code to remove items from local storage if they are undefined.
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(value)); // Here, we are just stringifying the value and setting it to local storage. (converted back into JavaScript notation when we pull it from local storage)
+    }
+  }, [value, key]);
 
   return [value, setValue];
 }
